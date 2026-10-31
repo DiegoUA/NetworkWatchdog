@@ -1,0 +1,20 @@
+# Build output
+bin/
+obj/
+publish/
+Output/
+*.exe
+*.msi
+
+# Visual Studio / VS Code
+.vs/
+.vscode/
+*.user
+*.suo
+
+# AI tooling folders (never commit)
+.gemini/
+
+# Local runtime data
+logs/
+*.log
