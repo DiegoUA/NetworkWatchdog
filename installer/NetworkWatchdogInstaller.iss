@@ -1,6 +1,6 @@
 [Setup]
 AppName=Network Watchdog Service
-AppVersion=3.9.1
+AppVersion=1.9.1
 AppPublisher=Network Watchdog
 DefaultDirName={autopf}\NetworkWatchdog
 ArchitecturesInstallIn64BitMode=x64
@@ -9,6 +9,7 @@ Compression=lzma
 SolidCompression=yes
 PrivilegesRequired=admin
 SetupLogging=yes
+DisableProgramGroupPage=yes
 CloseApplications=force
 
 [Files]
@@ -16,9 +17,14 @@ CloseApplications=force
 Source: "..\out\service\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
 Source: "..\out\tray\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
 
+[InstallDelete]
+; Remove the shortcut that older installers created in a folder literally named "(Default)"
+Type: files; Name: "{commonprograms}\(Default)\Network Watchdog.lnk"
+Type: dirifempty; Name: "{commonprograms}\(Default)"
+
 [Icons]
 Name: "{autostartup}\Network Watchdog Tray"; Filename: "{app}\NetworkWatchdog.TrayApp.exe"
-Name: "{group}\Network Watchdog"; Filename: "{app}\NetworkWatchdog.TrayApp.exe"
+Name: "{autoprograms}\Network Watchdog"; Filename: "{app}\NetworkWatchdog.TrayApp.exe"
 
 [Code]
 procedure CurStepChanged(CurStep: TSetupStep);

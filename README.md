@@ -1,6 +1,6 @@
 # NetworkWatchdog
 
-> **Repository note:** this repository contains **NetworkWatchdog**: the C# **NetworkWatchdogService** Windows service, the **NetworkWatchdog.TrayApp** dashboard and the installer. It continues the PowerShell toolkit [LightingWatchdog](https://github.com/DiegoUA/LightingWatchdog), from which it was split in v3.9.1; versions 3.0.0 to 3.9.0 were released from that repository.
+> **Repository note:** this repository contains **NetworkWatchdog**: the C# **NetworkWatchdogService** Windows service, the **NetworkWatchdog.TrayApp** dashboard and the installer. It continues the PowerShell toolkit [LightingWatchdog](https://github.com/DiegoUA/LightingWatchdog), from which it was split; before the split the application was developed there and numbered 3.0.0 to 3.9.0, which is 1.0.0 to 1.9.0 here (see the changelog). This repository has its own, independent version numbering, continuing with 1.9.1.
 
 Advanced Windows network diagnostic and self-healing watchdog for socket leaks, runaway connection storms, and kernel memory pressure.
 
@@ -94,17 +94,17 @@ While originally built to tame `LightingService.exe`, it has evolved into a syst
 
 | Version | Date | Description |
 | :--- | :--- | :--- |
-| **v3.0.0** | 2026‑09‑19 | **Architectural shift:** Scaffolded C# .NET 8 Worker Service for native Windows Service integration. |
-| **v3.4.0** | 2026‑09‑24 | Added Named Pipe IPC streaming, runtime threshold slider with process whitelisting. |
-| **v3.5.0** | 2026‑09‑28 | Base production milestone introducing asynchronous ETW channels, native OS TCP synchronization. |
-| **v3.6.0** | 2026-10-02 | **Major Lifecycle & Stability Update:** Inno Setup installer, OTA auto-updater, UDP socket resolution (`ERR_NO_BUFFER_SPACE` fix), UI noise filtration, and persistent threshold saving. |
-| **v3.6.1** | 2026-10-03 | **UI Decoupling:** Separated dashboard display thresholds from the system-wide mitigation engine to eliminate noise without blinding the 1000-socket global guardrail. |
-| **v3.7.0** | 2026-10-06 | **Configuration Automation:** Fully wired `appsettings.json`, added native Windows Restart Manager interop for file-lock dependency termination, and introduced Quarantine/Cooldown lifecycles with Syslog forwarding. |
-| **v3.7.1** | 2026-10-06 | **UI & Updater Stabilization:** Fixed auto-updater silent respawning context and resolved UI grid scrolling, WinForms thread-safety, and context menu refresh glitches. |
-| **v3.7.2** | 2026-10-06 | **Updater SemVer & Log Persistence:** Fixed self-updater infinite loop via dynamic assembly version resolution and introduced persistent Historical Mitigation logging. |
-| **v3.8.0** | 2026-10-06 | **R&D Diagnostic Evidence Suite:** Implemented one-click and automated evidence bundle generation (.zip) containing system port baselines, CIM socket dumps, process table telemetry, historical audit trails, event logs, and native memory minidumps via `DbgHelp.dll`. |
-| **v3.9.0** | 2026-10-30 | **Evidence Before Mitigation:** one-click R&D evidence case (sockets, counters, event logs, memory dump) exported from the dashboard, optionally captured automatically (off by default) *before* a leaking process is killed. Related-process discovery/restart, working Historical Archive, threshold-relative health colours, consolidated syslog/telemetry export, restart-pipeline and TrayApp hardening. |
-| **v3.9.1** | Unreleased | **Repository split (bridge release):** the application moves to this repository; the auto-updater now checks `DiegoUA/NetworkWatchdog`. No functional change. |
+| **v1.0.0** | 2026‑09‑19 | **Architectural shift:** Scaffolded C# .NET 8 Worker Service for native Windows Service integration. |
+| **v1.4.0** | 2026‑09‑24 | Added Named Pipe IPC streaming, runtime threshold slider with process whitelisting. |
+| **v1.5.0** | 2026‑09‑28 | Base production milestone introducing asynchronous ETW channels, native OS TCP synchronization. |
+| **v1.6.0** | 2026-10-02 | **Major Lifecycle & Stability Update:** Inno Setup installer, OTA auto-updater, UDP socket resolution (`ERR_NO_BUFFER_SPACE` fix), UI noise filtration, and persistent threshold saving. |
+| **v1.6.1** | 2026-10-03 | **UI Decoupling:** Separated dashboard display thresholds from the system-wide mitigation engine to eliminate noise without blinding the 1000-socket global guardrail. |
+| **v1.7.0** | 2026-10-06 | **Configuration Automation:** Fully wired `appsettings.json`, added native Windows Restart Manager interop for file-lock dependency termination, and introduced Quarantine/Cooldown lifecycles with Syslog forwarding. |
+| **v1.7.1** | 2026-10-06 | **UI & Updater Stabilization:** Fixed auto-updater silent respawning context and resolved UI grid scrolling, WinForms thread-safety, and context menu refresh glitches. |
+| **v1.7.2** | 2026-10-06 | **Updater SemVer & Log Persistence:** Fixed self-updater infinite loop via dynamic assembly version resolution and introduced persistent Historical Mitigation logging. |
+| **v1.8.0** | 2026-10-06 | **R&D Diagnostic Evidence Suite:** Implemented one-click and automated evidence bundle generation (.zip) containing system port baselines, CIM socket dumps, process table telemetry, historical audit trails, event logs, and native memory minidumps via `DbgHelp.dll`. |
+| **v1.9.0** | 2026-10-30 | **Evidence Before Mitigation:** one-click R&D evidence case (sockets, counters, event logs, memory dump) exported from the dashboard, optionally captured automatically (off by default) *before* a leaking process is killed. Related-process discovery/restart, working Historical Archive, threshold-relative health colours, consolidated syslog/telemetry export, restart-pipeline and TrayApp hardening. |
+| **v1.9.1** | 2026-11-02 | **First release as an independent project (repository split):** the application moves to this repository with its own version numbering (former 3.x.y is now 1.x.y); the auto-updater checks `DiegoUA/NetworkWatchdog`. Functionally the pre-split 1.9.0 (formerly 3.9.0), plus the installer Start Menu fix. |
 
 *(Versions v1.0.0 to v2.7.3 are in the LightingWatchdog repository. For full patch details of v3.x, view `CHANGELOG.md`.)*
 

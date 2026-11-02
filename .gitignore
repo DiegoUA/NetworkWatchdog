@@ -18,3 +18,4 @@ Output/
 # Local runtime data
 logs/
 *.log
+out/

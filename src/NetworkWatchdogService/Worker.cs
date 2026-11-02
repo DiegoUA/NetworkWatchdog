@@ -183,7 +183,7 @@ namespace NetworkWatchdogService
         // exposed in telemetry, so you can tell at a glance - from the
         // service's own log or the dashboard itself - whether the process
         // that's actually running matches the source you just built.
-        private const string BuildMarker = "NetworkWatchdog-v3.9.1";
+        private const string BuildMarker = "NetworkWatchdog-v1.9.1";
 
         private readonly WatchdogConfig _config;
 
@@ -200,7 +200,7 @@ namespace NetworkWatchdogService
         //
         // Only the PINNED per-service minimum is fixed at startup. The global threshold changes at
         // runtime (dashboard slider, saved override), so the floor is recomputed on every pass.
-        // (Before v3.9.0 the whole floor was frozen at startup, so a threshold lowered below the
+        // (Before v1.9.0 the whole floor was frozen at startup, so a threshold lowered below the
         // startup value - by the slider or by a saved override - never triggered a restart.)
         private readonly int _lowestPinnedServiceThreshold;
         private int MinPossibleThreshold => Math.Min(_globalMaxTcpConnections, _lowestPinnedServiceThreshold);
@@ -1696,7 +1696,7 @@ namespace NetworkWatchdogService
         }
 
         // =====================================================================================
-        // Restart pipeline (v3.9.0): discover related processes -> capture evidence -> stop -> kill
+        // Restart pipeline (v1.9.0): discover related processes -> capture evidence -> stop -> kill
         // -> restart target -> restart related services.
         // =====================================================================================
         private const string DependentServiceReason = "dependent service";

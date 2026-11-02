@@ -50,7 +50,7 @@ public sealed class PendingEvidenceCase
 /// </summary>
 public static class EvidenceCollector
 {
-    // ---- dbghelp (same declaration the TrayApp's v3.8.0 collector already used) ----
+    // ---- dbghelp (same declaration the TrayApp's v1.8.0 collector already used) ----
     [DllImport("DbgHelp.dll", SetLastError = true)]
     private static extern bool MiniDumpWriteDump(
         IntPtr hProcess, uint processId, SafeHandle hFile, uint dumpType,

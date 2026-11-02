@@ -1,23 +1,28 @@
 # Changelog
 
-All notable changes to NetworkWatchdog are documented here. The project continues the PowerShell toolkit LightingWatchdog (v1.0.0 to v2.7.3, documented in https://github.com/DiegoUA/LightingWatchdog ). Versions 3.0.0 to 3.9.0 were released from that repository; releases from 3.9.1 on are published here.
+All notable changes to NetworkWatchdog are documented here. The project continues the PowerShell toolkit LightingWatchdog (v1.0.0 to v2.7.3, documented in https://github.com/DiegoUA/LightingWatchdog ). Versions 1.0.0 to 1.9.0 of this application were developed and released inside that repository, where they were numbered 3.0.0 to 3.9.0 (tags v3.0.0 to v3.9.0); in the repository split they were renumbered (3.x.y became 1.x.y) so that both projects have independent version histories. Releases from 1.9.1 on are published here.
 
 ---
 
-## [Unreleased]
+## [1.9.1] - 2026-11-02
 
-> Proposed version: **3.9.1** (patch: bridge release for the repository split; no functional change). At release time rename this heading to `## [3.9.1] - <date>`; the version fields in both csproj files and the installer are already set to 3.9.1.
+> Version **1.9.1** (first release of NetworkWatchdog as an independent project after the repository split; functionally the pre-split 1.9.0, formerly numbered 3.9.0, plus one installer fix). The version fields in both csproj files and the installer are set to 1.9.1.
 
 ### Changed
 
-- **Repository split**: NetworkWatchdog (service, tray app, installer) now has its own repository (`DiegoUA/NetworkWatchdog`); the TrayApp auto-updater checks that repository (`RepoName`). The PowerShell toolkit stays in `DiegoUA/LightingWatchdog`. Installed copies of 3.9.0 and earlier are moved over by this bridge release, which is published in both repositories.
+- **Repository split**: NetworkWatchdog (service, tray app, installer) now has its own repository (`DiegoUA/NetworkWatchdog`); the TrayApp auto-updater checks that repository (`RepoName`). The PowerShell toolkit stays in `DiegoUA/LightingWatchdog`. The application is released only from this repository (there is no transitional release in the old one), and the PowerShell toolkit keeps its own, independent release history.
 - **Documentation**: README and CHANGELOG now cover only this application; the PowerShell lineage (v1.0.0 to v2.7.3) is documented in the LightingWatchdog repository.
-- **Version fields** set to 3.9.1 (both projects and the installer).
-- **No old project name left in the code**: the ETW session is now `NetworkWatchdogSession` (was `LightingWatchdogSession`), the service host `ServiceName` option matches the installed service name `NetworkWatchdogService`, and `BuildMarker` reads `NetworkWatchdog-v3.9.1`.
+- **Version numbering**: versions of the application were renumbered (former 3.x.y is now 1.x.y, so the former 3.9.0 is 1.9.0 and this release is 1.9.1) so that this project and the LightingWatchdog toolkit have independent release histories; the version fields of both projects and the installer are set accordingly.
+- **No old project name left in the code**: the ETW session is now `NetworkWatchdogSession` (was `LightingWatchdogSession`), the service host `ServiceName` option matches the installed service name `NetworkWatchdogService`, and `BuildMarker` reads `NetworkWatchdog-v1.9.1`.
+
+### Fixed
+
+- **Installer: Start Menu shortcut**: the shortcut was created in a Start Menu folder literally named "(Default)" because the installer script defined no program group name. The Start Menu Folder page is removed and the shortcut `Network Watchdog` is now placed directly in the Start Menu. Upgrading removes the old shortcut left in the `(Default)` folder.
+- **Repository**: the local publish folder `out/` is now ignored by Git.
 
 ---
 
-## [3.9.0] - 2026-10-30
+## [1.9.0] - 2026-10-30
 
 ### Added
 
@@ -57,7 +62,7 @@ All notable changes to NetworkWatchdog are documented here. The project continue
 - **Restart balloon alerts stopped after the first mitigation**: the tray read the oldest queue entry as "latest".
 - **Tooltip crash risk**: `NotifyIcon.Text` is truncated to 127 characters.
 - **Service could be left stopped after a mitigation**: when `sc stop` had already ended the process, the restart returned early; it now continues.
-- **Evidence for a process was captured after it had been killed** (v3.8.0 tray-side design): capture now happens before the kill, in the service.
+- **Evidence for a process was captured after it had been killed** (v1.8.0 tray-side design): capture now happens before the kill, in the service.
 - **Automatic evidence bundles could not be written** (install directory): superseded by service-side capture.
 - **Silent failures**: telemetry/control pipe handlers and the detection loop no longer swallow exceptions without a trace.
 
@@ -67,7 +72,7 @@ All notable changes to NetworkWatchdog are documented here. The project continue
 
 ---
 
-## [3.8.0] - 2026-10-06
+## [1.8.0] - 2026-10-06
 
 ### Added
 
@@ -75,7 +80,7 @@ All notable changes to NetworkWatchdog are documented here. The project continue
 - **Native Memory Minidumps**: Integrated `DbgHelp.dll` (`MiniDumpWriteDump`) directly into the TrayApp to capture unmanaged memory dumps (`.dmp`) of leaking processes on demand.
 - **Dual Diagnostic Targeting Modes**: Users can manually select any active PID and invoke a "Save As" dialog, or check "Auto-Target Top Socket Consuming Process for Dumps" to save bundles directly to the application directory.
 
-## [3.7.2] - 2026-10-06
+## [1.7.2] - 2026-10-06
 
 ### Added
 
@@ -85,7 +90,7 @@ All notable changes to NetworkWatchdog are documented here. The project continue
 
 - **Infinite Auto-Updater Loop**: Replaced the static hardcoded version string in `GitHubAutoUpdater` with dynamic execution assembly inspection (`Assembly.GetExecutingAssembly().GetName().Version`). Replaced brittle string alphabetical comparisons with robust `System.Version` semantic parsing to eliminate endless recursive update prompts.
 
-## [3.7.1] - 2026-10-06
+## [1.7.1] - 2026-10-06
 
 ### Fixed
 
@@ -94,7 +99,7 @@ All notable changes to NetworkWatchdog are documented here. The project continue
 - **Startup Handle Exceptions:** Fixed a race condition where the auto-updater attempted to invoke the UI thread before window handles were fully created.
 - **Auto-Updater TrayApp Respawning:** Fixed an issue where the silent Inno Setup execution (`/SILENT`) failed to relaunch the TrayApp into the user session after an OTA update. Modified the installer script `[Run]` flags to enforce `runasoriginaluser`.
 
-## [3.7.0] - 2026-10-06
+## [1.7.0] - 2026-10-06
 
 ### Added
 
@@ -113,7 +118,7 @@ All notable changes to NetworkWatchdog are documented here. The project continue
 
 - **Persistent Configuration State**: Fixed a bug where clicking "Save Configuration" in the Tray App failed to persist the threshold. The service now securely saves user overrides to `runtime-overrides.json` using the same atomic-write and Administrator-only ACL lock-downs as the whitelist.
 
-## [3.6.1] - 2026-10-03
+## [1.6.1] - 2026-10-03
 
 ### Added
 
@@ -123,7 +128,7 @@ All notable changes to NetworkWatchdog are documented here. The project continue
 
 - **Configuration Precedence (Technical Debt):** The application temporarily bypasses `appsettings.json` per-service limits, `MonitorAllProcesses` flags, and process tree targets. All system-wide socket tracking currently relies exclusively on the hardcoded `1000` socket limit and the `15s` polling interval, with user-driven runtime overrides persisting securely to `state.json`.
 
-## [3.6.0] - 2026-10-02
+## [1.6.0] - 2026-10-02
 
 ### Added
 
@@ -147,7 +152,7 @@ All notable changes to NetworkWatchdog are documented here. The project continue
 - **Auto-Updater API Mismatch:** Corrected the OTA updater target from `NetworkWatchdog` to `LightingWatchdog` to resolve 404 Not Found API errors.
 - **TrayApp Silent Crash:** Enforced `/p:PublishSingleFile=true` in the GitHub Actions deployment pipeline for the TrayApp to prevent runtime crashes caused by orphaned framework libraries.
 
-## [3.5.3] - 2026-09-28
+## [1.5.3] - 2026-09-28
 
 ### Security & Hardening
 
@@ -159,7 +164,7 @@ All notable changes to NetworkWatchdog are documented here. The project continue
 
 - **Tray App Graceful Elevation Prompts:** If a standard, un-elevated user attempts to modify the threshold slider or adjust the process whitelist via the Tray Dashboard, the app will safely catch the resulting `UnauthorizedAccessException` and render an explicit message box instructing the user to restart the interface as Administrator, preventing silent failures.
 
-## [3.5.2] - 2026-09-28
+## [1.5.2] - 2026-09-28
 
 ### Security & Hardening
 
@@ -179,7 +184,7 @@ All notable changes to NetworkWatchdog are documented here. The project continue
 
 - **Process Stream Drain Deadlocks:** The implementation of `RunScAsync` now reads standard output and standard error concurrently while awaiting process termination. This structurally avoids standard pipe buffer exhaustion deadlocks that previously caused the worker to hang during `sc query`.
 
-## [3.5.1] - 2026-09-28
+## [1.5.1] - 2026-09-28
 
 ### Added
 
@@ -200,7 +205,7 @@ All notable changes to NetworkWatchdog are documented here. The project continue
 - **PID Reuse Race Conditions:** Guarded `Process.StartTime` property retrievals within explicit `TryVerifySamePid` boundaries. The PID identity is now double-verified both before *and* directly after the 30-second mitigation window, ensuring the OS hasn't recycled the PID to an innocent application right before the `taskkill` strike.
 - **TCP Table Buffer Exhaustion:** Wrapped native `GetExtendedTcpTable` pointers inside an `ERROR_INSUFFICIENT_BUFFER` loop, ensuring table queries automatically expand unmanaged memory allocations when the Windows connection table surges dramatically between byte calculations.
 
-## [3.5.0] - 2026-09-28
+## [1.5.0] - 2026-09-28
 
 ### Added
 
@@ -221,7 +226,7 @@ All notable changes to NetworkWatchdog are documented here. The project continue
 - **TIME_WAIT Collision Crashes:** Extended the asynchronous mitigation delay from 15 seconds to 30 seconds. This allows the OS network stack ample time to clear `TIME_WAIT` orphaned sockets, completely eliminating `WSAEADDRINUSE` port conflict crashes when mitigated applications restart.
 - **ETW Teardown Orphans:** Fixed critical ETW unhandled teardown exceptions by invoking `_etwSession.Stop()` precisely prior to trace disposal inside the background cancellation register.
 
-## [3.4.2] - 2026-09-26
+## [1.4.2] - 2026-09-26
 
 ### Fixed
 
@@ -238,7 +243,7 @@ All notable changes to NetworkWatchdog are documented here. The project continue
 - **Anti-Tampering (CLI):** Replaced vulnerable string concatenation in `taskkill` invocations with `ProcessStartInfo.ArgumentList` to completely eliminate parameter injection vectors.
 - **Payload Validation:** Clamped the global threshold slider rigidly between 200 and 10,000 via `Math.Clamp`, and enforced strict Regex (`^[a-zA-Z0-9_\-\.]+$`) on process whitelisting to block path traversal and shell-escape characters.
 
-## [3.4.1] - 2026-09-24
+## [1.4.1] - 2026-09-24
 
 ### Added
 
@@ -253,7 +258,7 @@ All notable changes to NetworkWatchdog are documented here. The project continue
 - Increased Tray App pipe connection timeout to 1000 ms to ensure smooth handshakes without premature fallback drops.
 - Resolved SCM service startup timeout (Error `1053` / `CLR20r3 FileNotFoundException`) by bundling Windows hosting assemblies using `<CopyLocalLockFileAssemblies>` and targeting `-r win-x64` single-file publishing.
 
-## [3.4.0] - 2026-09-24
+## [1.4.0] - 2026-09-24
 
 ### Added
 
@@ -262,7 +267,7 @@ All notable changes to NetworkWatchdog are documented here. The project continue
 - Added a "Settings & Whitelist" tab to `DashboardForm` featuring a real-time `GlobalMaxTcpConnections` threshold slider and dynamic process whitelisting.
 - Implemented `SyslogNotifier.cs` to forward socket breach and mitigation alerts via UDP to remote syslog hosts or container instances.
 
-## [3.3.0] - 2026-09-24
+## [1.3.0] - 2026-09-24
 
 ### Added
 
@@ -271,7 +276,7 @@ All notable changes to NetworkWatchdog are documented here. The project continue
 - Added a "Terminate Process Tree" action button and dynamic context-menu item for manual kill actions.
 - Added a dedicated "Historical Mitigations" tab parsing `RestartEvents_v2.csv` directly in the UI.
 
-## [3.2.0] - 2026-09-24
+## [1.2.0] - 2026-09-24
 
 ### Added
 
@@ -279,7 +284,7 @@ All notable changes to NetworkWatchdog are documented here. The project continue
 - Added real-time CSV restart parsing and native Windows balloon notifications in `NetworkWatchdog.TrayApp` when socket thresholds are breached and mitigated.
 - Added a toggleable "Silent Mode" option in the system tray context menu to suppress pop-up alerts on demand.
 
-## [3.1.0] - 2026-09-23
+## [1.1.0] - 2026-09-23
 
 ### Added
 
@@ -301,7 +306,7 @@ All notable changes to NetworkWatchdog are documented here. The project continue
 - Removed the obsolete `docs/` folder.
 - Optimized the `README.md` Description section by replacing the verbose bullet lists with a condensed `Feature Milestones` summary, perfectly aligning feature additions with their historical release tags (`v2.5.x` through `v3.1.x`) and significantly reducing visual clutter.
 
-## [3.0.1] - 2026-09-21
+## [1.0.1] - 2026-09-21
 
 ### Added
 
@@ -323,7 +328,7 @@ All notable changes to NetworkWatchdog are documented here. The project continue
 - **ETW Session Lifecycle:** Resolved a critical bug where premature disposal of the `TraceEventSession` inside a synchronous `using` block blinded the background worker.
 - **Thread Starvation:** Unblocked the main health evaluation loop by wrapping ETW event processing in an asynchronous background task (`Task.Run`), ensuring the 1000-socket threshold checker reliably triggers the process recovery and socket flushing sequence.
 
-## [3.0.0] - 2026-09-19
+## [1.0.0] - 2026-09-19
 
 ### Added
 

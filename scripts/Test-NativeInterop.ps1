@@ -1,6 +1,6 @@
 <#
 .SYNOPSIS
-    Verifies, on a real Windows machine, the native/OS calls that NetworkWatchdog v3.9.0 relies on and that
+    Verifies, on a real Windows machine, the native/OS calls that NetworkWatchdog v1.9.0 relies on and that
     could not be compiled or run where the code was written.
 
 .DESCRIPTION

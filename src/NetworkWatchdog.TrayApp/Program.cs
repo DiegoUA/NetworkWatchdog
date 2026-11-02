@@ -1377,7 +1377,7 @@ namespace NetworkWatchdog.TrayApp
             }
         }
 
-        /// <summary>The limited, user-context collector (v3.8.0), kept ONLY as a fallback when the service cannot capture.</summary>
+        /// <summary>The limited, user-context collector (v1.8.0), kept ONLY as a fallback when the service cannot capture.</summary>
         private async Task OfferLocalFallbackAsync(int targetPid, string targetName, string zipPath, string? reason = null)
         {
             var answer = MessageBox.Show(
