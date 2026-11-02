@@ -1,6 +1,6 @@
 # Changelog
 
-All notable changes to NetworkWatchdog are documented here. The project continues the PowerShell toolkit LightingWatchdog (v1.0.0 to v2.7.3, documented in https://github.com/DiegoUA/LightingWatchdog ). Versions 1.0.0 to 1.9.0 of this application were developed and released inside that repository, where they were numbered 3.0.0 to 3.9.0 (tags v3.0.0 to v3.9.0); in the repository split they were renumbered (3.x.y became 1.x.y) so that both projects have independent version histories. Releases from 1.9.1 on are published here.
+All notable changes to NetworkWatchdog are documented here. The project continues the PowerShell toolkit LightingWatchdog (v1.0.0 to v2.7.4, documented in https://github.com/DiegoUA/LightingWatchdog ). Versions 1.0.0 to 1.9.0 of this application were developed and released inside that repository, where they were numbered 3.0.0 to 3.9.0 (those releases and tags were removed from that repository on 2026-11-02); in the repository split they were renumbered (3.x.y became 1.x.y) so that both projects have independent version histories. Releases from 1.9.1 on are published here.
 
 ---
 

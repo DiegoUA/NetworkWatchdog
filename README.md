@@ -64,7 +64,7 @@ While originally built to tame `LightingService.exe`, it has evolved into a syst
 
 ### Feature Milestones
 
-*Versions before 3.0 (the PowerShell lineage, v1.0.0 to v2.7.3) are documented in the [LightingWatchdog](https://github.com/DiegoUA/LightingWatchdog) repository.*
+*The PowerShell toolkit LightingWatchdog (v1.0.0 to v2.7.4, with its own, separate numbering) is documented in the [LightingWatchdog](https://github.com/DiegoUA/LightingWatchdog) repository.*
 
 * **v3.0.x**: Native C# .NET 8 Worker Service using zero-overhead Event Tracing for Windows (ETW) for kernel-level socket tracking.
 * **v3.1.x**: `NetworkWatchdog.TrayApp` graphical companion for real-time system tray monitoring (color-coded health icons and interactive tooltips).
@@ -106,7 +106,7 @@ While originally built to tame `LightingService.exe`, it has evolved into a syst
 | **v1.9.0** | 2026-10-30 | **Evidence Before Mitigation:** one-click R&D evidence case (sockets, counters, event logs, memory dump) exported from the dashboard, optionally captured automatically (off by default) *before* a leaking process is killed. Related-process discovery/restart, working Historical Archive, threshold-relative health colours, consolidated syslog/telemetry export, restart-pipeline and TrayApp hardening. |
 | **v1.9.1** | 2026-11-02 | **First release as an independent project (repository split):** the application moves to this repository with its own version numbering (former 3.x.y is now 1.x.y); the auto-updater checks `DiegoUA/NetworkWatchdog`. Functionally the pre-split 1.9.0 (formerly 3.9.0), plus the installer Start Menu fix. |
 
-*(Versions v1.0.0 to v2.7.3 are in the LightingWatchdog repository. For full patch details of v3.x, view `CHANGELOG.md`.)*
+*(The PowerShell toolkit LightingWatchdog (v1.0.0 to v2.7.4) has its own numbering in its repository. Versions of this application before 1.9.1 were numbered 3.0.0 to 3.9.0; for full patch details, view `CHANGELOG.md`.)*
 
 ---
 
