@@ -361,8 +361,10 @@ namespace NetworkWatchdog.TrayApp
             }) { Checked = _isSilentMode };
             menu.Items.Add(silent);
 
+#if !STORE_BUILD
             var checkUpdates = new ToolStripMenuItem("Check for Updates", null, async (s, e) => await GitHubAutoUpdater.CheckForUpdatesAsync(manualCheck: true));
             menu.Items.Add(checkUpdates);
+#endif
 
             // Opt-in switch for automatic evidence capture (OFF by default). The state shown here is
             // whatever the service reports; toggling needs administrator rights and is persisted.
@@ -638,6 +640,7 @@ namespace NetworkWatchdog.TrayApp
         }
     }
 
+#if !STORE_BUILD
     public static class GitHubAutoUpdater
     {
         private const string RepoOwner = "DiegoUA";
@@ -742,6 +745,14 @@ namespace NetworkWatchdog.TrayApp
             }
         }
     }
+#else
+    // Microsoft Store build: updates come only from the Store. No update code and no network access here.
+    public static class GitHubAutoUpdater
+    {
+        public static Version GetCurrentVersion() => System.Reflection.Assembly.GetExecutingAssembly().GetName().Version ?? new Version(1, 0, 0, 0);
+        public static Task CheckForUpdatesAsync(bool manualCheck = false) => Task.CompletedTask;
+    }
+#endif
 
     public static class EvidenceCollector
     {
@@ -1215,6 +1226,10 @@ namespace NetworkWatchdog.TrayApp
         /// <summary>Returns true if the dashboard is relaunching elevated (caller should stop).</summary>
         private bool OfferElevation()
         {
+#if STORE_BUILD
+            MessageBox.Show("This action needs administrator rights, because the watchdog service keeps evidence (including memory dumps) in a folder that only Administrators can read.\n\nClose Network Watchdog, then start it again with a right-click on its Start menu entry and choose Run as administrator.", "Administrator Rights Required", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            return false;
+#else
             var answer = MessageBox.Show(
                 "Collecting and exporting evidence needs administrator rights, because the watchdog service keeps evidence " +
                 "(including memory dumps) in a folder that only Administrators can read.\n\n" +
@@ -1226,6 +1241,7 @@ namespace NetworkWatchdog.TrayApp
                 return true;
             }
             return false;
+#endif
         }
 
         /// <summary>

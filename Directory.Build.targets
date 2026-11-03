@@ -1,0 +1,11 @@
+<Project>
+  <!--
+    Distribution channel switch.
+      dotnet publish ... -p:DistributionChannel=Store   -> defines STORE_BUILD (no updater, Microsoft Store package)
+      default (GitHub)                                  -> unchanged behaviour, updater included
+    Code uses:  #if STORE_BUILD ... #endif
+  -->
+  <PropertyGroup Condition="'$(DistributionChannel)' == 'Store'">
+    <DefineConstants>$(DefineConstants);STORE_BUILD</DefineConstants>
+  </PropertyGroup>
+</Project>
