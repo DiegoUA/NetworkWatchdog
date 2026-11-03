@@ -37,16 +37,13 @@
         <uap5:Extension Category="windows.startupTask" Executable="NetworkWatchdog.TrayApp.exe" EntryPoint="Windows.FullTrustApplication">
           <uap5:StartupTask TaskId="NetworkWatchdogTray" Enabled="false" DisplayName="Network Watchdog" />
         </uap5:Extension>
+        <!-- The product's own background monitor. Name must equal options.ServiceName in the service Program.cs. -->
+        <desktop6:Extension Category="windows.service" Executable="NetworkWatchdogService.exe" EntryPoint="Windows.FullTrustApplication">
+          <desktop6:Service Name="NetworkWatchdogService" StartupType="auto" StartAccount="localSystem" />
+        </desktop6:Extension>
       </Extensions>
     </Application>
   </Applications>
-
-  <Extensions>
-    <!-- The product's own background monitor. Name must equal options.ServiceName in the service Program.cs. -->
-    <desktop6:Extension Category="windows.service" Executable="NetworkWatchdogService.exe" EntryPoint="Windows.FullTrustApplication">
-      <desktop6:Service Name="NetworkWatchdogService" StartupType="auto" StartAccount="localSystem" />
-    </desktop6:Extension>
-  </Extensions>
 
   <Capabilities>
     <rescap:Capability Name="runFullTrust" />

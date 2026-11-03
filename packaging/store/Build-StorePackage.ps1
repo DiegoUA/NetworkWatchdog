@@ -87,8 +87,9 @@ $xml = $tpl.Replace('{{IDENTITY_NAME}}', (& $esc $IdentityName)).Replace('{{PUBL
 
 # 4. Pack (unsigned: the Store signs it).
 $msix = Join-Path $out ("NetworkWatchdog_{0}_x64.msix" -f $pkgVersion)
-& $makeappx pack /d $layout /p $msix /o
-if ($LASTEXITCODE -ne 0) { throw 'makeappx failed' }
+$mk = & $makeappx pack /d $layout /p $msix /o 2>&1
+if ($LASTEXITCODE -ne 0) { $mk | Select-Object -Last 15; throw 'makeappx failed' }
+$mk | Select-Object -Last 2
 Write-Host "Store package: $msix" -ForegroundColor Green
 
 # 5. Optional: signed copy for a local test (needs an administrator PowerShell to trust the test certificate).
