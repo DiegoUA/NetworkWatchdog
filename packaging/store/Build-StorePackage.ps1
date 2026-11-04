@@ -1,4 +1,4 @@
-<#
+﻿<#
 .SYNOPSIS
   Builds the Microsoft Store package (MSIX) of NetworkWatchdog, and optionally a signed copy for a local test.
 .EXAMPLE
@@ -63,8 +63,7 @@ $assets = Join-Path $layout 'Assets'
 New-Item -ItemType Directory -Path $assets | Out-Null
 $listing = Join-Path $out 'listing-icons'
 New-Item -ItemType Directory -Path $listing | Out-Null
-$icon = New-Object System.Drawing.Icon -ArgumentList (Join-Path $root 'src\NetworkWatchdog.TrayApp\app.ico'), 256, 256
-$srcBmp = $icon.ToBitmap()
+$srcBmp = New-Object System.Drawing.Bitmap (Join-Path $PSScriptRoot 'icons\Icon_1080.png')
 function Save-Png([int]$size, [string]$path) {
     $bmp = New-Object System.Drawing.Bitmap $size, $size
     $g = [System.Drawing.Graphics]::FromImage($bmp)
@@ -74,10 +73,14 @@ function Save-Png([int]$size, [string]$path) {
     $g.Dispose(); $bmp.Save($path, [System.Drawing.Imaging.ImageFormat]::Png); $bmp.Dispose()
 }
 Save-Png 44  (Join-Path $assets 'Square44x44Logo.png')
+foreach ($s in 16, 24, 32, 48, 256) {
+    Save-Png $s (Join-Path $assets "Square44x44Logo.targetsize-${s}.png")
+    Save-Png $s (Join-Path $assets "Square44x44Logo.targetsize-${s}_altform-unplated.png")
+}
 Save-Png 150 (Join-Path $assets 'Square150x150Logo.png')
 Save-Png 50  (Join-Path $assets 'StoreLogo.png')
-Save-Png 300  (Join-Path $listing 'Icon_300.png')
-Save-Png 1080 (Join-Path $listing 'Icon_1080.png')
+Copy-Item (Join-Path $PSScriptRoot 'icons\Icon_300.png') $listing
+Copy-Item (Join-Path $PSScriptRoot 'icons\Icon_1080.png') $listing
 
 # 3. Manifest.
 $tpl = Get-Content (Join-Path $PSScriptRoot 'AppxManifest.template.xml') -Raw -Encoding UTF8
@@ -87,6 +90,14 @@ $xml = $tpl.Replace('{{IDENTITY_NAME}}', (& $esc $IdentityName)).Replace('{{PUBL
 
 # 4. Pack (unsigned: the Store signs it).
 $msix = Join-Path $out ("NetworkWatchdog_{0}_x64.msix" -f $pkgVersion)
+# 3b. Resource index (resources.pri) so Windows can pick the targetsize and unplated logo variants.
+$makepri = Join-Path (Split-Path $makeappx) 'makepri.exe'
+$priCfg = Join-Path $out 'priconfig.xml'
+$r = & $makepri createconfig /cf $priCfg /dq en-US /pv 10.0.0 /o 2>&1
+if ($LASTEXITCODE -ne 0) { $r | Select-Object -Last 15; throw 'makepri createconfig failed' }
+$r = & $makepri new /pr $layout /cf $priCfg /mn (Join-Path $layout 'AppxManifest.xml') /of (Join-Path $layout 'resources.pri') /o 2>&1
+if ($LASTEXITCODE -ne 0) { $r | Select-Object -Last 15; throw 'makepri new failed' }
+Remove-Item $priCfg -ErrorAction SilentlyContinue
 $mk = & $makeappx pack /d $layout /p $msix /o 2>&1
 if ($LASTEXITCODE -ne 0) { $mk | Select-Object -Last 15; throw 'makeappx failed' }
 $mk | Select-Object -Last 2
