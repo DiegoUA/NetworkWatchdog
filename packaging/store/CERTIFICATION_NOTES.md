@@ -21,5 +21,5 @@ HOW TO TEST (3 minutes)
 BEHAVIOR
 - Restart/terminate happens only when a process exceeds the threshold (default 1000 sockets), with a 120 s cooldown, quarantine after 3 restarts per 60 min, and a user whitelist.
 - "Collect Evidence" is a user button; it writes a local ZIP that may contain a process memory dump. Nothing is uploaded.
-- This build has no updater and makes no internet connections. Privacy policy: https://github.com/DiegoUA/NetworkWatchdog/blob/main/PRIVACY.md
+- This build has no updater and makes no internet connections of its own; the only network feature is optional syslog forwarding, off by default, sent only to a server the user enters. Privacy policy: https://github.com/DiegoUA/NetworkWatchdog/blob/main/PRIVACY.md
 ---
