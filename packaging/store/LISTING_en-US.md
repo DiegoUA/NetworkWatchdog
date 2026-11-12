@@ -28,7 +28,7 @@ GOOD TO KNOW
 - Network Watchdog is a diagnostic and recovery tool. It is not an antivirus or a firewall and does not inspect network traffic.
 - Evidence cases can contain a memory dump of the affected process. They stay on your PC until you export them.
 
-Open source: https://github.com/DiegoUA/NetworkWatchdog
+Source available: https://github.com/DiegoUA/NetworkWatchdog
 
 ## What's new in this version
 First Microsoft Store release.
@@ -36,11 +36,11 @@ First Microsoft Store release.
 ## Search terms (max 7)
 socket leak
 tcp connections
-network monitor
+connection monitor
 watchdog
-process monitor
+port exhaustion
 diagnostics
-windows service
+background service
 
 ## Other fields
 - Category: Utilities & tools (pick the system or network utility subcategory if one is offered)
