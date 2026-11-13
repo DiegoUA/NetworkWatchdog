@@ -105,6 +105,7 @@ While originally built to tame `LightingService.exe`, it has evolved into a syst
 | **v1.8.0** | 2026-10-06 | **R&D Diagnostic Evidence Suite:** Implemented one-click and automated evidence bundle generation (.zip) containing system port baselines, CIM socket dumps, process table telemetry, historical audit trails, event logs, and native memory minidumps via `DbgHelp.dll`. |
 | **v1.9.0** | 2026-10-30 | **Evidence Before Mitigation:** one-click R&D evidence case (sockets, counters, event logs, memory dump) exported from the dashboard, optionally captured automatically (off by default) *before* a leaking process is killed. Related-process discovery/restart, working Historical Archive, threshold-relative health colours, consolidated syslog/telemetry export, restart-pipeline and TrayApp hardening. |
 | **v1.9.1** | 2026-11-02 | **First release as an independent project (repository split):** the application moves to this repository with its own version numbering (former 3.x.y is now 1.x.y); the auto-updater checks `DiegoUA/NetworkWatchdog`. Functionally the pre-split 1.9.0 (formerly 3.9.0), plus the installer Start Menu fix. |
+| **v1.9.2** | 2026-11-13 | **Whitelist hotfix:** whitelist entries that are Windows service names (for example `DoSvc`, hosted in a shared `svchost.exe`) now protect the process that hosts the service; before, only the process name was compared. |
 
 *(The PowerShell toolkit LightingWatchdog (v1.0.0 to v2.7.4) has its own numbering in its repository. Versions of this application before 1.9.1 were numbered 3.0.0 to 3.9.0; for full patch details, view `CHANGELOG.md`.)*
 
@@ -163,6 +164,8 @@ src/NetworkWatchdogService/appsettings.json
 ```
 
 It natively obeys all defined `WatchdogConfig` variables, including per-service thresholds (`MaxTcpConnections`), cooldown windows, Syslog forwarding, and global monitoring toggles (`MonitorAllProcesses`).
+
+A whitelist entry matches either the process name (for example `chrome`) or the name of any Windows service the process hosts (for example `DoSvc`, which runs inside `svchost.exe`); a process that hosts a whitelisted service is never restarted automatically. Names are not case-sensitive.
 
 Thresholds, the whitelist and the evidence switch can also be adjusted in real time on the **Settings & Whitelist** tab of the Tray Dashboard. Clicking "Save Configuration" saves the whitelist to `%ProgramData%\NetworkWatchdogService\whitelist.json` and the threshold and evidence switch to `runtime-overrides.json` (written atomically), which are applied on top of `appsettings.json` at the next start.
 

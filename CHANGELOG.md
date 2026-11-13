@@ -4,6 +4,26 @@ All notable changes to NetworkWatchdog are documented here. The project continue
 
 ---
 
+## [1.9.2] - 2026-11-13
+
+> Hotfix **1.9.2**: the whitelist now protects Windows services. The version fields in both csproj files are set to 1.9.2.
+
+### Fixed
+
+- **Whitelist ignored Windows services (service)**: a whitelist entry that is a Windows service name, for example `DoSvc`, never matched, because the detection loop compared the whitelist only with the process name and a service such as DoSvc runs inside a shared `svchost.exe`. The service name was resolved only later, inside the restart pipeline, which is why the logs and the Historical Archive showed `DoSvc` while the whitelist check had already passed. Result: a whitelisted `DoSvc` was restarted every time its cooldown ended. The service now also checks the names of all Windows services hosted by a process that exceeds its threshold, and does nothing if any of them is whitelisted (a shared host is protected as a whole). Entries that match the process name (`chrome`, `brave`, `Discord` and so on) behaved correctly before and are unchanged.
+
+### Changed
+
+- **Log entry for skipped hosts**: when a breaching process is skipped because it hosts a whitelisted service, the service logs one Information line (at most every 10 minutes per process and service): PID, process, connection count, threshold and the whitelisted service name.
+- `BuildMarker` reads `NetworkWatchdog-v1.9.2`.
+
+### Known limitations
+
+- The dashboard still lists a service host as `svchost`; the whitelist entry for a service is typed by name (for example `DoSvc`). Showing the hosted service name in the lists and offering it for whitelisting is planned for 1.10.0.
+- When a non-whitelisted service is restarted, its host process is ended with `taskkill /F /T`; if that host is shared, other services hosted in it stop with it. A protected-default list is planned.
+
+---
+
 ## [1.9.1] - 2026-11-02
 
 > Version **1.9.1** (first release of NetworkWatchdog as an independent project after the repository split; functionally the pre-split 1.9.0, formerly numbered 3.9.0, plus one installer fix). The version fields in both csproj files and the installer are set to 1.9.1.

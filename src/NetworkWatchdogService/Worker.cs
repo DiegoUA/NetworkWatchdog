@@ -116,6 +116,11 @@ namespace NetworkWatchdogService
         private readonly ConcurrentDictionary<int, DateTime> _pidStartTimes = new();
         private readonly ConcurrentDictionary<int, string> _processNameCache = new();
         private readonly ConcurrentDictionary<int, string> _serviceNameCache = new();
+        // PID -> ALL Windows services hosted by that process (a shared svchost hosts several).
+        // _serviceNameCache keeps only one name per PID, which is enough for the restart
+        // pipeline but not for the whitelist: whitelisting "DoSvc" must protect the svchost
+        // process that hosts it. The dictionary is replaced as a whole on every refresh.
+        private volatile Dictionary<int, string[]> _hostedServicesByPid = new();
         private readonly ConcurrentDictionary<int, DateTime> _activeRestarts = new();
         private readonly ConcurrentQueue<string> _recentRestarts = new();
         
@@ -183,7 +188,7 @@ namespace NetworkWatchdogService
         // exposed in telemetry, so you can tell at a glance - from the
         // service's own log or the dashboard itself - whether the process
         // that's actually running matches the source you just built.
-        private const string BuildMarker = "NetworkWatchdog-v1.9.1";
+        private const string BuildMarker = "NetworkWatchdog-v1.9.2";
 
         private readonly WatchdogConfig _config;
 
@@ -355,6 +360,18 @@ namespace NetworkWatchdogService
                             continue;
 
                         if (currentConnections <= threshold) continue;
+
+                        // Whitelist by SERVICE name: a Windows service such as DoSvc runs inside a
+                        // shared svchost.exe, so the process-name check above can never match it.
+                        // Done only for real breaches (the set of candidates is tiny).
+                        string? whitelistedService = FindWhitelistedHostedService(pid);
+                        if (whitelistedService != null)
+                        {
+                            if (ShouldNotify("whitelist:" + procName + ":" + whitelistedService, TimeSpan.FromMinutes(10)))
+                                _logger.LogInformation("PID {pid} ({name}) has {count} connections (threshold {max}) but hosts whitelisted service {service}; not acting.",
+                                    proc.Id, procName, currentConnections, threshold, whitelistedService);
+                            continue;
+                        }
 
                         // The name used for cooldown/quarantine bookkeeping and logging:
                         // the configured service group name if this process belongs to
@@ -1602,14 +1619,22 @@ namespace NetworkWatchdogService
             return _serviceNameCache.TryGetValue(processId, out string? cachedName) ? cachedName : null;
         }
 
-        private void RefreshServiceNameCacheIfStale()
+        // A PID missing from the hosted-services map (a host process started after the last
+        // refresh) may force one extra refresh, but never more often than this.
+        private static readonly TimeSpan ForcedServiceRefreshMinAge = TimeSpan.FromSeconds(10);
+
+        private void RefreshServiceNameCacheIfStale() => RefreshServiceNameCache(ServiceCacheTtl);
+
+        private void RefreshServiceNameCache(TimeSpan maxAge)
         {
             lock (_serviceCacheRefreshLock)
             {
-                if (DateTime.UtcNow - _lastServiceCacheRefreshUtc < ServiceCacheTtl) return;
+                if (DateTime.UtcNow - _lastServiceCacheRefreshUtc < maxAge) return;
 
                 try
                 {
+                    var byPid = new Dictionary<int, List<string>>();
+
                     using var searcher = new ManagementObjectSearcher(
                         "SELECT Name, ProcessId FROM Win32_Service WHERE ProcessId != 0");
                     using var objects = searcher.Get();
@@ -1619,9 +1644,14 @@ namespace NetworkWatchdogService
                         if (obj["ProcessId"] is uint pid && obj["Name"] is string name && !string.IsNullOrEmpty(name))
                         {
                             _serviceNameCache[(int)pid] = name;
+
+                            if (!byPid.TryGetValue((int)pid, out var hosted))
+                                byPid[(int)pid] = hosted = new List<string>();
+                            hosted.Add(name);
                         }
                     }
 
+                    _hostedServicesByPid = byPid.ToDictionary(kv => kv.Key, kv => kv.Value.ToArray());
                     _lastServiceCacheRefreshUtc = DateTime.UtcNow;
                 }
                 catch (Exception ex)
@@ -1629,6 +1659,29 @@ namespace NetworkWatchdogService
                     _logger.LogError(ex, "Failed to refresh PID->service name cache via WMI.");
                 }
             }
+        }
+
+        /// <summary>
+        /// Returns the name of a whitelisted Windows service hosted by this process, or null.
+        /// Matches ALL services the process hosts (a shared svchost may host several), so
+        /// whitelisting any one of them protects the whole host process.
+        /// </summary>
+        private string? FindWhitelistedHostedService(int pid)
+        {
+            if (_whitelist.IsEmpty) return null;
+
+            RefreshServiceNameCacheIfStale();
+            if (!_hostedServicesByPid.TryGetValue(pid, out string[]? names))
+            {
+                // Possibly a host process that started after the last refresh.
+                RefreshServiceNameCache(ForcedServiceRefreshMinAge);
+                _hostedServicesByPid.TryGetValue(pid, out names);
+            }
+
+            if (names == null) return null;
+            foreach (string serviceName in names)
+                if (_whitelist.ContainsKey(serviceName)) return serviceName;
+            return null;
         }
 
         private bool IsTrustedExecutablePath(string path)
