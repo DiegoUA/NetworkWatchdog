@@ -66,22 +66,24 @@ While originally built to tame `LightingService.exe`, it has evolved into a syst
 
 *The PowerShell toolkit LightingWatchdog (v1.0.0 to v2.7.4, with its own, separate numbering) is documented in the [LightingWatchdog](https://github.com/DiegoUA/LightingWatchdog) repository.*
 
-* **v3.0.x**: Native C# .NET 8 Worker Service using zero-overhead Event Tracing for Windows (ETW) for kernel-level socket tracking.
-* **v3.1.x**: `NetworkWatchdog.TrayApp` graphical companion for real-time system tray monitoring (color-coded health icons and interactive tooltips).
-* **v3.2.x**: Universal system-wide process monitoring (`MonitorAllProcesses`) and tray balloon alerts with a toggleable Silent Mode.
-* **v3.3.x**: Interactive Live Process Inspector Dashboard Form, context-menu manual process termination, and historical mitigation log viewer.
-* **v3.4.x**: Inter-Process Communication (IPC) via Named Pipes, runtime settings slider with whitelisting, UDP Syslog alert forwarding, GDI Handle hygiene guards, global unhandled exception capture, and CLI anti-tampering limits.
-* **v3.5.x**: Production Readiness — Asynchronous ETW event channels, native OS TCP synchronization, Local Privilege Escalation (LPE) boundary guards, PID reuse collision prevention, `BuiltinAdministratorsSid` IPC lockdown, IPC pipe segregation, and atomic secure-ACL JSON persistence.
-* **v3.6.x**: Major Lifecycle Update — Implemented Inno Setup installer for unified deployment, and embedded the `GitHubAutoUpdater` module in the Tray App for seamless OTA updates.
-* **v3.7.x**: Fully wired `appsettings.json`, native Windows Restart Manager interop, Quarantine/Cooldown lifecycles, Syslog forwarding, UI/updater stabilization and persistent Historical Mitigation logging.
-* **v3.8.x**: R&D Diagnostic Evidence Suite (user-initiated and automatic evidence bundles with native memory minidumps).
-* **v3.9.x**: Evidence is captured by the service *before* a leaking process is killed (one-click export from the dashboard), related-process discovery and restart (dependent services, file locks, `ProcessTree`), a working Historical Archive, threshold-relative health colours, consolidated syslog/telemetry export, restart-pipeline hardening and TrayApp security hardening.
+*The numbers below are the current numbering of this repository, the same as in the Version History table. Before the repository split on 2026-11-02 these releases were numbered 3.0.x to 3.9.x (3.x.y is now 1.x.y).*
+
+* **v1.0.x**: Native C# .NET 8 Worker Service using zero-overhead Event Tracing for Windows (ETW) for kernel-level socket tracking.
+* **v1.1.x**: `NetworkWatchdog.TrayApp` graphical companion for real-time system tray monitoring (color-coded health icons and interactive tooltips).
+* **v1.2.x**: Universal system-wide process monitoring (`MonitorAllProcesses`) and tray balloon alerts with a toggleable Silent Mode.
+* **v1.3.x**: Interactive Live Process Inspector Dashboard Form, context-menu manual process termination, and historical mitigation log viewer.
+* **v1.4.x**: Inter-Process Communication (IPC) via Named Pipes, runtime settings slider with whitelisting, UDP Syslog alert forwarding, GDI Handle hygiene guards, global unhandled exception capture, and CLI anti-tampering limits.
+* **v1.5.x**: Production Readiness — Asynchronous ETW event channels, native OS TCP synchronization, Local Privilege Escalation (LPE) boundary guards, PID reuse collision prevention, `BuiltinAdministratorsSid` IPC lockdown, IPC pipe segregation, and atomic secure-ACL JSON persistence.
+* **v1.6.x**: Major Lifecycle Update — Implemented Inno Setup installer for unified deployment, and embedded the `GitHubAutoUpdater` module in the Tray App for seamless OTA updates.
+* **v1.7.x**: Fully wired `appsettings.json`, native Windows Restart Manager interop, Quarantine/Cooldown lifecycles, Syslog forwarding, UI/updater stabilization and persistent Historical Mitigation logging.
+* **v1.8.x**: R&D Diagnostic Evidence Suite (user-initiated and automatic evidence bundles with native memory minidumps).
+* **v1.9.x**: Evidence is captured by the service *before* a leaking process is killed (one-click export from the dashboard), related-process discovery and restart (dependent services, file locks, `ProcessTree`), a working Historical Archive, threshold-relative health colours, consolidated syslog/telemetry export, restart-pipeline hardening and TrayApp security hardening. Version 1.9.2 made whitelist entries match Windows service names (such as `DoSvc`) as well as process names.
 
 ---
 
 ## ⚡ Core Architecture: Zero-Overhead Monitoring
 
-`NetworkWatchdogService` (v3.x+) utilizes a hybrid state-tracking architecture:
+`NetworkWatchdogService` (v1.x+) utilizes a hybrid state-tracking architecture:
 
 1. **Authoritative Count:** Every 15 seconds (`WatchdogIntervalSeconds`) the service reads the socket table from the same Windows network provider that PowerShell's `Get-NetTCPConnection` uses (CIM/NSI). Unlike the older IP Helper table, it sees sockets that were reserved with `bind()` but never connected, which is exactly how many leaks look.
 2. **Zero-Overhead Live Tracking:** Between those checks, Event Tracing for Windows (ETW) streams raw socket allocations in real time through high-throughput memory channels, so the count stays current without slowing down your PC.
@@ -142,7 +144,7 @@ Optionally the service can also capture evidence **automatically** right before 
 
 ## 📊 Exports and Data Locations
 
-The service (v3.x) keeps its data in `%ProgramData%\NetworkWatchdogService\`, a folder restricted to Administrators and SYSTEM:
+The service (v1.x) keeps its data in `%ProgramData%\NetworkWatchdogService\`, a folder restricted to Administrators and SYSTEM:
 
 * `Evidence\Case_*.zip` (+ `.json` metadata): R&D evidence cases (newest `Evidence.MaxCases` are kept).
 * `MitigationHistory.csv`: every automatic restart (served to the dashboard's Historical Archive over IPC).
