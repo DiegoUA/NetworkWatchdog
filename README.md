@@ -27,6 +27,14 @@ To permanently allow the installer to run:
     │       └── release.yml
     ├── installer/
     │   └── NetworkWatchdogInstaller.iss
+    ├── packaging/
+    │   └── store/
+    │       ├── icons/
+    │       ├── AppxManifest.template.xml
+    │       ├── Build-StorePackage.ps1
+    │       ├── CERTIFICATION_NOTES.md
+    │       ├── LISTING_en-US.md
+    │       └── STORE_SUBMISSION.md
     ├── scripts/
     │   ├── Install-Service.ps1
     │   ├── Setup-GitHooks.ps1
@@ -36,6 +44,8 @@ To permanently allow the installer to run:
     │   ├── NetworkWatchdogService/
     │   │   ├── Models/
     │   │   │   └── WatchdogConfig.cs
+    │   │   ├── Properties/
+    │   │   ├── appsettings.Development.json
     │   │   ├── appsettings.json
     │   │   ├── EvidenceCollector.cs
     │   │   ├── NetworkWatchdogService.csproj
@@ -44,13 +54,15 @@ To permanently allow the installer to run:
     │   │   ├── TelemetryExporter.cs
     │   │   └── Worker.cs
     │   └── NetworkWatchdog.TrayApp/
+    │       ├── app.ico
     │       ├── NetworkWatchdog.TrayApp.csproj
     │       └── Program.cs
+    ├── .gitignore
     ├── CHANGELOG.md
+    ├── Directory.Build.targets
     ├── LICENSE
-    ├── NetworkWatchdogService.md
-    ├── README.md
-    └── networkwatchdog-project-changelog-manager.md
+    ├── PRIVACY.md
+    └── README.md
 
 ## ⚙️️ Description
 
