@@ -16,6 +16,16 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      - name: Check tag matches Directory.Build.props
+        shell: pwsh
+        run: |
+          $xml = [xml](Get-Content Directory.Build.props -Raw)
+          $v = [string]$xml.Project.PropertyGroup.Version
+          $tag = $env:GITHUB_REF_NAME.TrimStart('v')
+          if (-not $v) { throw 'No <Version> found in Directory.Build.props.' }
+          if ($v.Trim() -ne $tag) { throw "Tag v$tag does not match <Version> $($v.Trim()) in Directory.Build.props. Bump the version, commit, and tag again." }
+          Write-Host "Version check OK: $tag"
+
       - name: Setup .NET
         uses: actions/setup-dotnet@v4
         with:

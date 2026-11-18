@@ -188,7 +188,18 @@ namespace NetworkWatchdogService
         // exposed in telemetry, so you can tell at a glance - from the
         // service's own log or the dashboard itself - whether the process
         // that's actually running matches the source you just built.
-        private const string BuildMarker = "NetworkWatchdog-v1.9.2";
+        // Single version source: <Version> in the root Directory.Build.props (C12). The "+commit" suffix is cut off.
+        private static readonly string BuildMarker = "NetworkWatchdog-v" + ReadServiceVersion();
+
+        private static string ReadServiceVersion()
+        {
+            var asm = typeof(Worker).Assembly;
+            var info = System.Reflection.CustomAttributeExtensions
+                .GetCustomAttribute<System.Reflection.AssemblyInformationalVersionAttribute>(asm)?.InformationalVersion;
+            if (string.IsNullOrWhiteSpace(info)) return asm.GetName().Version?.ToString(3) ?? "unknown";
+            var plus = info.IndexOf('+');
+            return plus >= 0 ? info.Substring(0, plus) : info;
+        }
 
         private readonly WatchdogConfig _config;
 

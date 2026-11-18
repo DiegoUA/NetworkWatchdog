@@ -1,6 +1,17 @@
 # Changelog
 
-All notable changes to NetworkWatchdog are documented here. The project continues the PowerShell toolkit LightingWatchdog (v1.0.0 to v2.7.4, documented in https://github.com/DiegoUA/LightingWatchdog ). Versions 1.0.0 to 1.9.0 of this application were developed and released inside that repository, where they were numbered 3.0.0 to 3.9.0 (those releases and tags were removed from that repository on 2026-11-02); in the repository split they were renumbered (3.x.y became 1.x.y) so that both projects have independent version histories. Releases from 1.9.1 on are published here.
+All notable changes to NetworkWatchdog are documented here. The project continues the PowerShell toolkit LightingWatchdog (v1.0.0 to v2.7.4, documented in <https://github.com/DiegoUA/LightingWatchdog> ). Versions 1.0.0 to 1.9.0 of this application were developed and released inside that repository, where they were numbered 3.0.0 to 3.9.0 (those releases and tags were removed from that repository on 2026-11-02); in the repository split they were renumbered (3.x.y became 1.x.y) so that both projects have independent version histories. Releases from 1.9.1 on are published here.
+
+---
+
+## [Unreleased]
+
+> Work towards **1.10.0**. The version now reads 1.10.0 in all build outputs (see the first entry).
+
+### Changed
+
+- **Single version source (build)**: the application version is now set in one place, `<Version>` in the new root file `Directory.Build.props`. The `Version`, `AssemblyVersion` and `FileVersion` lines were removed from both csproj files and are derived from it. The installer reads its version from the published tray exe. `BuildMarker` is built at run time from the service's own version (format unchanged: `NetworkWatchdog-v1.10.0`). `packaging/store/Build-StorePackage.ps1` reads the version from `Directory.Build.props`. To release: change that one line, commit, tag `v<Version>`.
+- **Release workflow guard (CI)**: `release.yml` now stops before building when the pushed tag (`vX.Y.Z`) differs from `<Version>` in `Directory.Build.props`. Pre-release tags are not supported yet.
 
 ---
 

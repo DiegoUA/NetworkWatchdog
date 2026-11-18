@@ -18,6 +18,7 @@ param(
 )
 $ErrorActionPreference = 'Stop'
 $root     = (Resolve-Path (Join-Path $PSScriptRoot '..\..')).Path
+$propsFile = Join-Path $root 'Directory.Build.props'      # single version source (C12)
 $svcProj  = Join-Path $root 'src\NetworkWatchdogService\NetworkWatchdogService.csproj'
 $trayProj = Join-Path $root 'src\NetworkWatchdog.TrayApp\NetworkWatchdog.TrayApp.csproj'
 $trayCode = Join-Path $root 'src\NetworkWatchdog.TrayApp\Program.cs'
@@ -26,8 +27,9 @@ if (-not (Select-String -Path $trayCode -Pattern 'STORE_BUILD' -Quiet)) {
     throw 'The tray code has no STORE_BUILD switch yet: the updater would end up in the Store package. Apply the STORE_BUILD patch first.'
 }
 if (-not $Version) {
-    $m = [regex]::Match((Get-Content $svcProj -Raw), '<Version>\s*(\d+\.\d+\.\d+)\s*</Version>')
-    if (-not $m.Success) { throw 'Cannot read <Version> from the service csproj; pass -Version x.y.z' }
+    if (-not (Test-Path $propsFile)) { throw "Directory.Build.props not found at $propsFile; pass -Version x.y.z" }
+    $m = [regex]::Match((Get-Content $propsFile -Raw), '<Version>\s*(\d+\.\d+\.\d+)\s*</Version>')
+    if (-not $m.Success) { throw 'Cannot read <Version> from Directory.Build.props; pass -Version x.y.z' }
     $Version = $m.Groups[1].Value
 }
 if ($Version -notmatch '^\d+\.\d+\.\d+$') { throw "Version must look like 1.10.0 (got '$Version')" }

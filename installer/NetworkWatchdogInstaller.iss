@@ -1,6 +1,19 @@
+; Version comes from the published tray exe, which gets it from <Version> in Directory.Build.props (C12).
+; Override for a manual build: ISCC /DAppVersion=1.10.0 ...
+#ifndef AppVersion
+  #define AppExePath AddBackslash(SourcePath) + "..\out\tray\NetworkWatchdog.TrayApp.exe"
+  #define VerMajor
+  #define VerMinor
+  #define VerRev
+  #define VerBuild
+  #define AppVersionFull ParseVersion(AppExePath, VerMajor, VerMinor, VerRev, VerBuild)
+  #define AppVersion Str(VerMajor) + "." + Str(VerMinor) + "." + Str(VerRev)
+#endif
+
 [Setup]
 AppName=Network Watchdog Service
-AppVersion=1.9.2
+AppVersion={#AppVersion}
+VersionInfoVersion={#AppVersion}.0
 AppPublisher=Network Watchdog
 DefaultDirName={autopf}\NetworkWatchdog
 ArchitecturesInstallIn64BitMode=x64

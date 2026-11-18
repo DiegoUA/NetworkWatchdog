@@ -1,0 +1,11 @@
+<Project>
+  <!--
+    Single source of the application version (C12).
+    Bump ONLY this line for a release, then commit and tag v<Version>.
+    AssemblyVersion, FileVersion and the installer version derive from it;
+    release.yml fails when the tag differs. Channel switch: see Directory.Build.targets.
+  -->
+  <PropertyGroup>
+    <Version>1.10.0</Version>
+  </PropertyGroup>
+</Project>
