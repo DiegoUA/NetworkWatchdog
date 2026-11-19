@@ -4,6 +4,23 @@ All notable changes to NetworkWatchdog are documented here. The project continue
 
 ---
 
+## [1.9.3] - 2026-11-19
+
+> Hotfix **1.9.3**: the threshold number box on the Settings & Whitelist tab. The version fields in both csproj files are set to 1.9.3.
+
+### Fixed
+
+- **Threshold number box and slider fought each other (tray)**: typing a value in the number box next to the threshold slider changed it by itself (typing 1000 gave 1133, the slider jumped left and right, and only a few values such as 595, 1133, 1636 and 2031 stayed; holding an arrow ran up to about 700 and dropped back to 595). The two controls updated each other, only releasing the slider sent a value to the service, and every telemetry refresh (every 2 seconds) overwrote both controls with the service's value. The number box is now the source of truth: the slider follows the box, the slider updates the box only when the user moves it, and neither control re-fires the other (re-entrancy guard). Any whole number from 200 to 10000 can be entered.
+- **Save wrote the wrongly displayed value (tray)**: *Save Configuration* only asked the service to save the value it already held, which could be the wrong one (before Save `runtime-overrides.json` held 200, after Save it held 1133). Save now sends exactly the number shown in the box together with the save command.
+
+### Changed
+
+- **Threshold changes apply live and are kept**: an edit in the number box (typing, arrows) or on the slider (mouse or keyboard) is sent to the service about half a second after the last change, together with a save, so the value survives a service restart and an update. Before, only releasing the slider with the mouse applied a value, and it was kept only after *Save Configuration*.
+- **The dashboard no longer overwrites a value being edited**: the telemetry refresh adopts the service's threshold only while the number box has no focus and no edit is waiting to be sent.
+- `BuildMarker` reads `NetworkWatchdog-v1.9.3`.
+
+---
+
 ## [1.9.2] - 2026-11-13
 
 > Hotfix **1.9.2**: the whitelist now protects Windows services. The version fields in both csproj files are set to 1.9.2.
