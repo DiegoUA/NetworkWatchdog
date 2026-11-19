@@ -918,6 +918,11 @@ namespace NetworkWatchdog.TrayApp
         private readonly ListBox _listWhitelist;
         private readonly TrackBar _sliderThreshold;
         private readonly NumericUpDown _numThreshold;
+        // Threshold box is the source of truth. _syncingThreshold stops the slider and the box from
+        // re-firing each other; _thresholdPending marks a user edit not yet sent to the service.
+        private readonly System.Windows.Forms.Timer _thresholdSendTimer;
+        private bool _syncingThreshold;
+        private bool _thresholdPending;
         private readonly CheckBox _chkAutoCaptureEvidence;
         private readonly DataGridView _gridEvidence;
         private readonly Label _lblEvidenceStatus;
@@ -1074,22 +1079,36 @@ namespace NetworkWatchdog.TrayApp
             _numThreshold = new NumericUpDown { Top = 40, Left = 330, Width = 80, Minimum = 200, Maximum = 10000 };
             var btnSaveConfig = new Button { Text = "Save Configuration", Top = 38, Left = 430, Width = 150 };
 
-            _sliderThreshold.MouseUp += (s, e) =>
+            // Live apply, debounced: any user edit (box, arrows, slider) is sent to the service about
+            // 500 ms after the last change, together with a save, so the value survives a service
+            // restart or an update.
+            _thresholdSendTimer = new System.Windows.Forms.Timer { Interval = 500 };
+            _thresholdSendTimer.Tick += (s, e) => SendThreshold();
+
+            // TrackBar.Scroll is raised only by user input (mouse or keyboard), never by setting Value.
+            _sliderThreshold.Scroll += (s, e) =>
             {
-                if (_numThreshold.Value != _sliderThreshold.Value)
-                    _numThreshold.Value = _sliderThreshold.Value;
-                _sendConfigAction(new ConfigUpdateCommand { NewGlobalThreshold = _sliderThreshold.Value });
+                if (_syncingThreshold) return;
+                _syncingThreshold = true;
+                try { _numThreshold.Value = _sliderThreshold.Value; }
+                finally { _syncingThreshold = false; }
+                QueueThresholdSend();
             };
 
+            // Box -> slider: the slider only follows; it never writes back to the box.
             _numThreshold.ValueChanged += (s, e) =>
             {
-                if (_sliderThreshold.Value != (int)_numThreshold.Value)
-                    _sliderThreshold.Value = (int)_numThreshold.Value;
+                if (_syncingThreshold) return;
+                _syncingThreshold = true;
+                try { _sliderThreshold.Value = (int)_numThreshold.Value; }
+                finally { _syncingThreshold = false; }
+                QueueThresholdSend();
             };
 
             btnSaveConfig.Click += (s, e) =>
             {
-                if (_sendConfigAction(new ConfigUpdateCommand { SaveRequested = true }))
+                // Save sends exactly what the box shows (threshold + save in one command).
+                if (SendThreshold())
                 {
                     MessageBox.Show("Configuration successfully saved to disk.\n\nThresholds and Whitelist will persist across system reboots.", "Configuration Saved", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 }
@@ -1595,10 +1614,20 @@ namespace NetworkWatchdog.TrayApp
                 _suppressCheckEvent = false;
             }
 
-            if (_sliderThreshold.Value != packet.GlobalMaxTcpConnections && packet.GlobalMaxTcpConnections >= _sliderThreshold.Minimum && packet.GlobalMaxTcpConnections <= _sliderThreshold.Maximum)
+            // Adopt the service value only when the user is not editing: not while an edit is waiting to be
+            // sent and not while the box has focus. Both controls are set under the guard, so no event
+            // fires back and nothing is sent.
+            if (!_thresholdPending && !_numThreshold.ContainsFocus
+                && (_numThreshold.Value != packet.GlobalMaxTcpConnections || _sliderThreshold.Value != packet.GlobalMaxTcpConnections)
+                && packet.GlobalMaxTcpConnections >= _sliderThreshold.Minimum && packet.GlobalMaxTcpConnections <= _sliderThreshold.Maximum)
             {
-                _sliderThreshold.Value = packet.GlobalMaxTcpConnections;
-                _numThreshold.Value = packet.GlobalMaxTcpConnections;
+                _syncingThreshold = true;
+                try
+                {
+                    _numThreshold.Value = packet.GlobalMaxTcpConnections;
+                    _sliderThreshold.Value = packet.GlobalMaxTcpConnections;
+                }
+                finally { _syncingThreshold = false; }
             }
 
             if (_listWhitelist.Items.Count != packet.Whitelist.Count)
@@ -1609,6 +1638,21 @@ namespace NetworkWatchdog.TrayApp
                     _listWhitelist.Items.Add(w);
                 }
             }
+        }
+
+        private void QueueThresholdSend()
+        {
+            _thresholdPending = true;
+            _thresholdSendTimer.Stop();
+            _thresholdSendTimer.Start();
+        }
+
+        private bool SendThreshold()
+        {
+            _thresholdSendTimer.Stop();
+            _thresholdPending = false;
+            int value = (int)_numThreshold.Value;
+            return _sendConfigAction(new ConfigUpdateCommand { NewGlobalThreshold = value, SaveRequested = true });
         }
     }
 
