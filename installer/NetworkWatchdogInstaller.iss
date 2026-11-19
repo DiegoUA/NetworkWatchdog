@@ -1,6 +1,6 @@
 [Setup]
 AppName=Network Watchdog Service
-AppVersion=1.9.2
+AppVersion=1.9.3
 AppPublisher=Network Watchdog
 DefaultDirName={autopf}\NetworkWatchdog
 ArchitecturesInstallIn64BitMode=x64

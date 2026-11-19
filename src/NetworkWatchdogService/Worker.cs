@@ -188,7 +188,7 @@ namespace NetworkWatchdogService
         // exposed in telemetry, so you can tell at a glance - from the
         // service's own log or the dashboard itself - whether the process
         // that's actually running matches the source you just built.
-        private const string BuildMarker = "NetworkWatchdog-v1.9.2";
+        private const string BuildMarker = "NetworkWatchdog-v1.9.3";
 
         private readonly WatchdogConfig _config;
 
